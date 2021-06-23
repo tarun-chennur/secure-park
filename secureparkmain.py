@@ -6,7 +6,6 @@ from keys import config
 
 firebase = pyrebase.initialize_app(config)
 db=firebase.database()
-db.child("user-db").child("UID0001").child("cost").set("0")
 
 #uid = "UID0001"
 
@@ -37,20 +36,22 @@ def check(): #this should recieve the uid, list and queue exceed it in terms of 
 
 def calctime(pt):
    timenow=time.time()
-   diff=(pt-timenow)
+   diff=(timenow-pt)
+   print("THE DIFFERENCE IN TIME IS",diff)
    return diff
 
 def calcndel(uid):
-   prkd_time=db.child("daily-report").child(uid).get().val() 
+   prkd_time=db.child("daily-report").child(uid).child("time-of-parking").get().val() 
+   print("HHAHA")
    ishelessthanamin=calctime(prkd_time)
    if(ishelessthanamin<=120):
        return
    else:
-  
-        db.child("outbound-cars").child(uid).set("x")
-        park_time=db.db.child("daily-report").child(uid).child("time-of-parking").get().val()
-        diff=time.time()-calctime(park_time)
-        cost= (diff*1) + (db.child("user-db").child(uid).child("cost"))
+        print("DELETE THIS")       
+        db.child("outbound-cars").child(uid).child("Departure-time").set(time.time())
+        park_time=db.child("daily-report").child(uid).child("time-of-parking").get().val()
+        diff=time.time()-park_time
+        cost= (diff) + float((db.child("user-db").child(uid).child("cost").get().val()))
         db.child("user-db").child(uid).child("cost").set(cost)
 
         db.child("daily-report").child(uid).remove()
@@ -64,11 +65,14 @@ def registration(uid):
     for i in ids:
         list_blklist.append(i)
     if uid in list_blklist:
-        exit_time=db.child("outbound-cars").child(uid).get().val() 
+        exit_time=db.child("outbound-cars").child(uid).child("Departure-time").get().val() 
+        print(exit_time)
         ishelessthan5=calctime(exit_time)
         if(ishelessthan5<=300):
+            print("PLEASE RETURN AFTER 5 MINS")
             return
         else:
+            print("ITS been more than 5mins welcome back")
             db.child("daily-report").child(uid).child("time-of-parking").set(time.time())
             
             db.child("outbound-cars").child(uid).remove()  
