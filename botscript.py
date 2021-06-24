@@ -1,14 +1,14 @@
 import time
+import datetime
 from firebase import Firebase
 import keys
-
 
 firebase = Firebase(keys.config)
 db = firebase.database()
 
 
 def calculate(enter,exit):
-    return (exit-enter)/60000.0
+    return (exit-enter)/3600.0
 
 def runner(id):
     users = db.child('users').get().val()
@@ -36,6 +36,7 @@ def runner(id):
                 'uuid':id,
                 'entertime':time.time(),
             })
+            print(user['name'], " has enetered parking at ", datetime.datetime.now().strftime("%H:%M:%S"))
             return
     print("User does not exist in system")
 

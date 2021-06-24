@@ -1,5 +1,6 @@
 import urllib.request
 import keys
+from botscript import runner
 
 def get_data():
 	global data
@@ -9,8 +10,9 @@ def get_data():
 	
 	data = n
 	
-#	data = n.split() 			#To split data we got.
+	# data = n.split() 			#To split data we got.
 
 while True:
 	get_data()
-	print(data)
+	if  data!=" "*10: 
+		runner(data)
