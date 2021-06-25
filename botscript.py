@@ -6,9 +6,26 @@ import keys
 firebase = Firebase(keys.config)
 db = firebase.database()
 
+def check(outime, intime):
+    if outime-intime<300:
+        print("Duplicate")
+        return 0
+    return 1
+
 
 def calculate(enter,exit):
-    return (exit-enter)/3600.0
+    bill = 0 
+    diff = (exit-enter)/3600.0
+    if diff>=0 and diff <=4:
+        bill += diff*10
+    if diff>4 and diff<=14:
+        diff -= 4
+        bill += diff*9
+    if diff>14:
+        diff -=10
+        bill += diff*8
+        
+    return bill
 
 def runner(id):
     users = db.child('users').get().val()
@@ -21,23 +38,27 @@ def runner(id):
             if curr:
                 for j in range(len(curr)):
                     #User is exiting
+
                     if id == list(curr.values())[j]['uuid']:
                         nowtime=time.time()
-                        bill = calculate(list(curr.values())[j]['entertime'],nowtime)
-                        print(user['name'],' has a bill of Rs.', bill)
-                        db.child('history').push({
-                            'uuid':id,
-                            'entertime':list(curr.values())[j]['entertime'],
-                            'exittime':nowtime,
-                            'bill': bill,
-                        })
-                        db.child('users').child(list(users.keys())[i]).update({'total_bill':user['total_bill']+bill})
-                        db.child('parked').child(list(curr.keys())[j]).remove()
+                        #Duplicate check
+                        if check(nowtime, list(curr.values())[j]['entertime'] ):
+                            bill = calculate(list(curr.values())[j]['entertime'],nowtime)
+                            print(user['name'],' has a bill of Rs.', bill)
+                            db.child('history').push({
+                                'uuid':id,
+                                'entertime':list(curr.values())[j]['entertime'],
+                                'exittime':datetime.datetime.now().strftime("%H:%M:%S"),
+                                'bill': bill,
+                            })
+                            db.child('users').child(list(users.keys())[i]).update({'total_bill':user['total_bill']+bill})
+                            db.child('parked').child(list(curr.keys())[j]).remove()
                         return
             #User is entering
             db.child('parked').push({
                 'uuid':id,
                 'entertime':time.time(),
+                'time': datetime.datetime.now().strftime("%H:%M:%S")
             })
             print(user['name'], " has enetered parking at ", datetime.datetime.now().strftime("%H:%M:%S"))
             return
@@ -45,7 +66,7 @@ def runner(id):
 
 
 # New id recieved
-# runner('UUID123456')
+runner('UUID654321')
 
 
 # Add user to the user table
