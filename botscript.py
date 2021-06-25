@@ -23,12 +23,15 @@ def runner(id):
                     #User is exiting
                     if id == list(curr.values())[j]['uuid']:
                         nowtime=time.time()
-                        print(user['name'],' has a bill of Rs.', calculate(list(curr.values())[j]['entertime'],nowtime))
+                        bill = calculate(list(curr.values())[j]['entertime'],nowtime)
+                        print(user['name'],' has a bill of Rs.', bill)
                         db.child('history').push({
                             'uuid':id,
                             'entertime':list(curr.values())[j]['entertime'],
                             'exittime':nowtime,
+                            'bill': bill,
                         })
+                        db.child('users').child(list(users.keys())[i]).update({'total_bill':user['total_bill']+bill})
                         db.child('parked').child(list(curr.keys())[j]).remove()
                         return
             #User is entering
@@ -46,5 +49,13 @@ def runner(id):
 
 
 # Add user to the user table
-# user = {'uuid':'','name':''}
+# user = {'uuid':'UUID654321',
+    # 'name':'Tarun',
+    # 'company_name':'IBM',
+    # 'phone_no':'235423423',
+    # 'email_id':'tarun@ibm.com',
+    # 'vehicle_no':'KA23424',
+    # 'vehicle_type':'car',
+    # 'total_bill':'0'
+    # }
 # db.child('users').push(user)
