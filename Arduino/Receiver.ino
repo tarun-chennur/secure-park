@@ -9,8 +9,8 @@
 //RH_ASK driver(2000, 4, 5, 0); //ESP8266; bits/sec => 2000; Receive_Pin ->4 [D2] ; Transmit_Pin -> 5 [D1]
 
 // SSID
-const char* ssid     = "CHETHAN";
-const char* password = "8296983944";
+const char* ssid     = "SSID Name";
+const char* password = "SSID Password";
 #define BUFSIZE 20
 uint8_t UID[10];
 int len=0;
