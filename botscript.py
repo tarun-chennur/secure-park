@@ -66,7 +66,7 @@ def runner(id):
 
 
 # New id recieved
-runner('UUID654321')
+# runner('UUID654321')
 
 
 # Add user to the user table
